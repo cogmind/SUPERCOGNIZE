@@ -25,7 +25,7 @@
 			for(j = 0; j < a.length - 1; j++) {
 				first = b[0];
 				b.shift();
-				b.push(first);
+				//b.push(first);
 				for(i = 0; i < b.length; i++){
 					pair = [a[i], b[i]];
 					//out(pair);
