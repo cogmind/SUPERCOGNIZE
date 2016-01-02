@@ -30,6 +30,7 @@ Your browser does not support the HTML5 canvas tag.
     const X = 0;
     const Y = 1;
     var expTimer = window.setInterval(displayStimulus, iti);
+    var nSquares = 8; //INIT
 
     //TODO
     //replace timer with
@@ -47,7 +48,7 @@ Your browser does not support the HTML5 canvas tag.
 
     function endSession(reason) {
         reason = "Session ended due to: ".concat(reason);
-        alert(reason);
+        //alert(reason);
         
     }
 
@@ -69,13 +70,20 @@ Your browser does not support the HTML5 canvas tag.
 
 		//
         ctx.fillStyle = randomColorFromPalette(createColorPalette());
-        var nSquares = 8; //DEBUGABLE 2 does not work
-
+       
         coordinates = getCoordinates(nSquares);
         //console.log(coordinates);
 
+        var fillA = ctx.fillStyle;
+            
         for (i = 0; i < nSquares; i++) {
+            ctx.fillStyle = fillA;
             ctx.fillRect(coordinates[i][X], coordinates[i][Y], squareSize, squareSize);
+            //ctx.fillStyle = "#FFFFFF";
+            //ctx.fillRect(coordinates[i][X]+12, coordinates[i][Y]+12, 2, 2);
+            //Demonstrates that the midpoint is in the upper left corner
+            //ctx.fillRect(coordinates[i][X], coordinates[i][Y], 2, 2);
+
         }
     }
 
@@ -90,44 +98,77 @@ Your browser does not support the HTML5 canvas tag.
         return color;
     }
 
+    //Pseudo-class
+    var Box = function(x, y, margin) {
+        this.x = x;
+        this.y = y;
+        this.margin = margin;
+        this.w = x;
+        this.n = y;
+        this.e = x + this.margin;
+        this.s = y + this.margin;
+        };
+
+    var n_calls = 0;
 
     function boundingBoxTest(coordinates1, coordinates2, squareSize){
+
+//        n_calls++;
+//        out(n_calls);
         //out(coordinates1);
         //out(coordinates2);
         //out("/////////");
         var isOverlap = false;
         //console.log("Runnning bb test");
         //for (i = 0; i < coordinates.length - 1; i++) {
-        box1_w = coordinates1[X];
-        box1_e = coordinates1[X]; + squareSize;
-        box1_n = coordinates1[Y];
-        box1_s = coordinates1[Y];// + squareSize;
 
-        box2_w = coordinates2[X];
-        box2_e = coordinates2[X];// + squareSize;
-        box2_n = coordinates2[Y];
-        box2_s = coordinates2[Y];// + squareSize;
+        var box1 = new Box(coordinates1[X], coordinates1[Y], squareSize);
+        var box2 = new Box(coordinates2[X], coordinates2[Y], squareSize);
+        
+//        out(" ".concat(box1.s, " > ", box2.n, ". ", box1.n, " > ", box2.s));
 
-        a = box2_w;
-        b = box1_e;
-        c = box2_e;
-        d = box1_w;
-        e = box2_n;
-        f = box1_s;
-        g = box2_s;
-        h = box1_n;
+            // W > E
+            // N > S
 
-        tf1 = (a > b);
-        tf2 = (c > d);
-        tf3 = (e > f);
-        tf4 = (g > h);
+            isOverlap = ((box1.s) < (box2.n)) ||
+            (box1.n > (box2.s)) ||
+            ((box1.e) < box2.w) ||
+            (box1.w > (box2.e));
+
+        // isOverlap = !((box1.e > box2.w) && (box1.e > box2.e) &&
+        //             (box1.n > box2.s) && (box1.s > box2.n));
+
+        //(((box1.w > box2.e) || (box2.e > box1.w)) || ((box1.n > box2.s) || (box2.s > box1.n)));
+     
+        // box1_w = coordinates1[X];
+        // box1_e = coordinates1[X]; + squareSize;
+        // box1_n = coordinates1[Y];
+        // box1_s = coordinates1[Y];// + squareSize;
+
+        // box2_w = coordinates2[X];
+        // box2_e = coordinates2[X];// + squareSize;
+        // box2_n = coordinates2[Y];
+        // box2_s = coordinates2[Y];// + squareSize;
+
+        // a = box2_w;
+        // b = box1_e;
+        // c = box2_e;
+        // d = box1_w;
+        // e = box2_n;
+        // f = box1_s;
+        // g = box2_s;
+        // h = box1_n;
+
+        // tf1 = (a > b);
+        // tf2 = (c > d);
+        // tf3 = (e > f);
+        // tf4 = (g > h);
 
         // out(tf1);
         // out(tf2);
         // out(tf3);
         // out(tf4);
 
-        isOverlap =     !((a > b) || (c > d) || (e > f) || (g > h));
 
         //                 );
         // isOverlap =     !(
@@ -169,7 +210,7 @@ Your browser does not support the HTML5 canvas tag.
 //        console.log("Coordinates are more than 1");
 
             var inputArray = [];
-            var level = 8; //TO DO --- depends on the staircase
+            var level = nSquares; //TO DO --- depends on the staircase
 
             for (i = 0; i < level; i++){
                 inputArray[i] = i;
@@ -177,9 +218,16 @@ Your browser does not support the HTML5 canvas tag.
             var outputArray = getAllPairwiseCombinations(inputArray);
             //console.log(outputArray);
 
-            for ( j = 0; j < outputArray.length - 1; j = j + 2) {
-                if (boundingBoxTest( coordinates[outputArray[j]], coordinates[outputArray[j + 1]], squareSize )) {
+            var pair1 = [];
+            var pair2 = [];
 
+            for ( j = 0; j < outputArray.length - 1; j = j + 2) {
+                pair1 = coordinates[outputArray[j]];
+                pair2 = coordinates[outputArray[j+1]];
+                //out(pair1);
+                //out(pair2);
+                if (boundingBoxTest( pair1, pair2, squareSize )) {
+                    out("SUCCESS");
                     //console.log("Valid square found");
                     valid_coordinates.push(coordinates[outputArray[j]]); // TO DO Incorrect???....
                     valid_coordinates.push(coordinates[outputArray[j + 1]]);
