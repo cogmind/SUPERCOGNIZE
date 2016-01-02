@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="600" height="500" style="border:1px solid
+#c3c3c3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+<script type="text/javascript" src="AllPairwiseCombinations.js"></script> 
+<script type="text/javascript">
+
+//   window.write("<p>Hello</>");
+
+    var iti = 500;
+    //DEBUG
+    //var iti = 20000;
+    var sessions = 1; //DEBUG
+    var count = 0;
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    ctx.fillStyle = "#7F7F7F";
+	ctx.fillRect(0,0,600,500);
+    const xMargin = 10;
+    const yMargin = 10;
+    var x = 100;
+    var y = 100;
+    var squareSize = 26;
+    var coordinates = [];
+    const X = 0;
+    const Y = 1;
+    var expTimer = window.setInterval(displayStimulus, iti);
+
+    //TODO
+    //replace timer with
+
+    ///https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval#Example
+    // (function loop(){
+    //    setTimeout(function() {
+    //       // Your logic here
+
+    //       loop();
+    //   }, delay);
+    // })();
+
+    console.log("(C) Copyright 2015. Daniel Labbé\nRunning experiment...");//Firebug debug output
+
+    function endSession(reason) {
+        reason = "Session ended due to: ".concat(reason);
+        alert(reason);
+        
+    }
+
+    function displayStimulus() {
+        //Background
+        clearCanvas(ctx, c);
+        ctx.fillStyle = "#7F7F7F";
+        ctx.fillRect(0,0,600,500);
+
+        count++;
+        if (count == sessions) {
+            window.clearInterval(expTimer);
+            endSession("Timeout");
+        }
+
+
+        /**for (i = 0; i < 5; i++) {**/
+
+
+		//
+        ctx.fillStyle = randomColorFromPalette(createColorPalette());
+        var nSquares = 8; //DEBUGABLE 2 does not work
+
+        coordinates = getCoordinates(nSquares);
+        //console.log(coordinates);
+
+        for (i = 0; i < nSquares; i++) {
+            ctx.fillRect(coordinates[i][X], coordinates[i][Y], squareSize, squareSize);
+        }
+    }
+
+
+    function createColorPalette() {
+       var colors = ["#FF0000", "#0000FF", "#00FF00", "#CC0000", "#0000CC", "#00CC00", "#FFFF00", "#FF00FF", "#00FFFF", "#FFCC00", "#CC00FF", "#00FFCC"];
+       return colors;
+    }
+
+    function randomColorFromPalette(colorArray) {
+        color = colorArray[randInt(0, colorArray.length)];
+        return color;
+    }
+
+
+    function boundingBoxTest(coordinates1, coordinates2, squareSize){
+        //out(coordinates1);
+        //out(coordinates2);
+        //out("/////////");
+        var isOverlap = false;
+        //console.log("Runnning bb test");
+        //for (i = 0; i < coordinates.length - 1; i++) {
+        box1_w = coordinates1[X];
+        box1_e = coordinates1[X]; + squareSize;
+        box1_n = coordinates1[Y];
+        box1_s = coordinates1[Y];// + squareSize;
+
+        box2_w = coordinates2[X];
+        box2_e = coordinates2[X];// + squareSize;
+        box2_n = coordinates2[Y];
+        box2_s = coordinates2[Y];// + squareSize;
+
+        a = box2_w;
+        b = box1_e;
+        c = box2_e;
+        d = box1_w;
+        e = box2_n;
+        f = box1_s;
+        g = box2_s;
+        h = box1_n;
+
+        tf1 = (a > b);
+        tf2 = (c > d);
+        tf3 = (e > f);
+        tf4 = (g > h);
+
+        // out(tf1);
+        // out(tf2);
+        // out(tf3);
+        // out(tf4);
+
+        isOverlap =     !((a > b) || (c > d) || (e > f) || (g > h));
+
+        //                 );
+        // isOverlap =     !(
+        //                     (
+        //                         (box2_w > box1_e) || (box2_e > box1_w)) && ((box2_n > box1_s) || (box2_s > box1_n)
+        //                     )
+        //                 );
+        //isOverlap = !(isOverlap);
+//            out(box1y);
+//           out(box2y);
+                       //TO DO && ; 
+        //}
+        return isOverlap;
+    }
+    
+    
+    function getCoordinates(requestedSquares) {
+
+
+        //TODO Implement recursion 
+        coordinates = []; // Change later to preloading?
+        
+        //console.log("Getting coordinates....");
+
+        validSquaresFound = 0;
+     
+        j = 0;
+
+        //while (validSquaresFound < requestedSquares) {
+            //console.log("Run while..");
+           for (i = 0; i < requestedSquares; i++) {
+                coordinates.push( pickRandom_xy() );
+                //console.log("Added random coordinates");
+                //console.log(coordinates[0])
+            }
+            out(coordinates);
+            valid_coordinates = [];
+
+//        console.log("Coordinates are more than 1");
+
+            var inputArray = [];
+            var level = 8; //TO DO --- depends on the staircase
+
+            for (i = 0; i < level; i++){
+                inputArray[i] = i;
+            }
+            var outputArray = getAllPairwiseCombinations(inputArray);
+            //console.log(outputArray);
+
+            for ( j = 0; j < outputArray.length - 1; j = j + 2) {
+                if (boundingBoxTest( coordinates[outputArray[j]], coordinates[outputArray[j + 1]], squareSize )) {
+
+                    //console.log("Valid square found");
+                    valid_coordinates.push(coordinates[outputArray[j]]); // TO DO Incorrect???....
+                    valid_coordinates.push(coordinates[outputArray[j + 1]]);
+                    validSquaresFound++;
+                    //out("Valid coords: ");
+                    //out(valid_coordinates);
+                } else {
+                    out("BOX overlaps.");
+                }
+            }
+            // for ( j = 0; j < coordinates.length - 1; j++) {
+
+            //     if (boundingBoxTest( coordinates[j], coordinates[j+1], squareSize/2 )) {
+            //         console.log("Valid square found");
+            //         valid_coordinates.push(coordinates[j+1]);
+            //         validSquaresFound++;
+            //     }
+            // }
+
+        //}        
+        //coordinates = [1,5];
+        return coordinates;
+    }
+
+    function pickRandom_xy() {
+      //  console.log("retrieving random x and y");
+        x = randInt(xMargin,(600-3*xMargin));
+        y = randInt(yMargin,(500-3*yMargin));
+        return [ x, y];
+    } 
+    
+    function clearCanvas(context, canvas) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function randInt(min, max) {
+         return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    function out(aString) {
+        //Arbritary function for relaying debug information to programmatically selectable outputs
+        console.log(aString);
+    }
+
+</script>
+
+</body>
+</html>
+
+
