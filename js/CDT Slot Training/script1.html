@@ -15,7 +15,7 @@ Your browser does not support the HTML5 canvas tag.
     var iti = 500;
     //DEBUG
     //var iti = 20000;
-    var sessions = 1; //DEBUG
+    var sessions = 100; //DEBUG
     var count = 0;
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -53,6 +53,9 @@ Your browser does not support the HTML5 canvas tag.
     }
 
     function displayStimulus() {
+
+        //TRIAL
+
         //Background
         clearCanvas(ctx, c);
         ctx.fillStyle = "#7F7F7F";
@@ -65,19 +68,21 @@ Your browser does not support the HTML5 canvas tag.
         }
 
 
+
         /**for (i = 0; i < 5; i++) {**/
 
 
 		//
-        ctx.fillStyle = randomColorFromPalette(createColorPalette());
+
        
         retrievedCoordinates = getCoordinates(nSquares);
         //console.log(coordinates);
 
-        var fillA = ctx.fillStyle;
-            
+
+        var retrievedColors = pickRandomSetOfColors(nSquares);
+
         for (i = 0; i < nSquares; i++) {
-            ctx.fillStyle = fillA;
+            ctx.fillStyle = retrievedColors[i];
             ctx.fillRect(retrievedCoordinates[i][X], retrievedCoordinates[i][Y], squareSize, squareSize);
             ///DEBUG
             //ctx.fillStyle = "#FFFFFF";
@@ -85,9 +90,19 @@ Your browser does not support the HTML5 canvas tag.
             //Demonstrates that the midpoint is in the upper left corner
             //ctx.fillRect(retrievedCoordinates[i][X], retrievedCoordinates[i][Y], 2, 2);
 
+            //DATA OUT
         }
     }
 
+    function pickRandomSetOfColors(nColors){
+        var selectedColors = [];
+
+        for (i = 0; i < nColors; i++){
+            selectedColors[i]= randomColorFromPalette(createColorPalette());
+        }
+
+        return selectedColors;
+    }
 
     function createColorPalette() {
        var colors = ["#FF0000", "#0000FF", "#00FF00", "#CC0000", "#0000CC", "#00CC00", "#FFFF00", "#FF00FF", "#00FFFF", "#FFCC00", "#CC00FF", "#00FFCC"];
