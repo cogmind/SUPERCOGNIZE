@@ -21,12 +21,12 @@ Your browser does not support the HTML5 canvas tag.
     var ctx = c.getContext("2d");
     ctx.fillStyle = "#7F7F7F";
 	ctx.fillRect(0,0,600,500);
-    const xMargin = 10;
-    const yMargin = 10;
+    const xsquareSize = 10;
+    const ysquareSize = 10;
     var x = 100;
     var y = 100;
     var squareSize = 26;
-    var coordinates = [];
+    var retrievedCoordinates = [];
     const X = 0;
     const Y = 1;
     var expTimer = window.setInterval(displayStimulus, iti);
@@ -71,18 +71,19 @@ Your browser does not support the HTML5 canvas tag.
 		//
         ctx.fillStyle = randomColorFromPalette(createColorPalette());
        
-        coordinates = getCoordinates(nSquares);
+        retrievedCoordinates = getCoordinates(nSquares);
         //console.log(coordinates);
 
         var fillA = ctx.fillStyle;
             
         for (i = 0; i < nSquares; i++) {
             ctx.fillStyle = fillA;
-            ctx.fillRect(coordinates[i][X], coordinates[i][Y], squareSize, squareSize);
+            ctx.fillRect(retrievedCoordinates[i][X], retrievedCoordinates[i][Y], squareSize, squareSize);
+            ///DEBUG
             //ctx.fillStyle = "#FFFFFF";
             //ctx.fillRect(coordinates[i][X]+12, coordinates[i][Y]+12, 2, 2);
             //Demonstrates that the midpoint is in the upper left corner
-            //ctx.fillRect(coordinates[i][X], coordinates[i][Y], 2, 2);
+            //ctx.fillRect(retrievedCoordinates[i][X], retrievedCoordinates[i][Y], 2, 2);
 
         }
     }
@@ -99,163 +100,93 @@ Your browser does not support the HTML5 canvas tag.
     }
 
     //Pseudo-class
-    var Box = function(x, y, margin) {
+    var Box = function(x, y, squareSize) {
+        this.margin = 4;
         this.x = x;
         this.y = y;
-        this.margin = margin;
-        this.w = x;
-        this.n = y;
-        this.e = x + this.margin;
-        this.s = y + this.margin;
+        this.squareSize = squareSize;
+        this.w = x - this.margin;
+        this.n = y - this.margin;
+        this.e = x + this.squareSize + this.margin;
+        this.s = y + this.squareSize + this.margin;
         };
 
     var n_calls = 0;
 
     function boundingBoxTest(coordinates1, coordinates2, squareSize){
 
-//        n_calls++;
-//        out(n_calls);
-        //out(coordinates1);
-        //out(coordinates2);
-        //out("/////////");
         var isOverlap = false;
-        //console.log("Runnning bb test");
-        //for (i = 0; i < coordinates.length - 1; i++) {
 
         var box1 = new Box(coordinates1[X], coordinates1[Y], squareSize);
         var box2 = new Box(coordinates2[X], coordinates2[Y], squareSize);
-        
-//        out(" ".concat(box1.s, " > ", box2.n, ". ", box1.n, " > ", box2.s));
+    
+        isOverlap = ((box1.s) < (box2.n)) ||
+        (box1.n > (box2.s)) ||
+        ((box1.e) < box2.w) ||
+        (box1.w > (box2.e));
 
-            // W > E
-            // N > S
-
-            isOverlap = ((box1.s) < (box2.n)) ||
-            (box1.n > (box2.s)) ||
-            ((box1.e) < box2.w) ||
-            (box1.w > (box2.e));
-
-        // isOverlap = !((box1.e > box2.w) && (box1.e > box2.e) &&
-        //             (box1.n > box2.s) && (box1.s > box2.n));
-
-        //(((box1.w > box2.e) || (box2.e > box1.w)) || ((box1.n > box2.s) || (box2.s > box1.n)));
-     
-        // box1_w = coordinates1[X];
-        // box1_e = coordinates1[X]; + squareSize;
-        // box1_n = coordinates1[Y];
-        // box1_s = coordinates1[Y];// + squareSize;
-
-        // box2_w = coordinates2[X];
-        // box2_e = coordinates2[X];// + squareSize;
-        // box2_n = coordinates2[Y];
-        // box2_s = coordinates2[Y];// + squareSize;
-
-        // a = box2_w;
-        // b = box1_e;
-        // c = box2_e;
-        // d = box1_w;
-        // e = box2_n;
-        // f = box1_s;
-        // g = box2_s;
-        // h = box1_n;
-
-        // tf1 = (a > b);
-        // tf2 = (c > d);
-        // tf3 = (e > f);
-        // tf4 = (g > h);
-
-        // out(tf1);
-        // out(tf2);
-        // out(tf3);
-        // out(tf4);
-
-
-        //                 );
-        // isOverlap =     !(
-        //                     (
-        //                         (box2_w > box1_e) || (box2_e > box1_w)) && ((box2_n > box1_s) || (box2_s > box1_n)
-        //                     )
-        //                 );
-        //isOverlap = !(isOverlap);
-//            out(box1y);
-//           out(box2y);
-                       //TO DO && ; 
-        //}
         return isOverlap;
     }
     
-    
     function getCoordinates(requestedSquares) {
+        //TODO Implement recursion
+       
+        var overlap = 0;
 
-
-        //TODO Implement recursion 
-        coordinates = []; // Change later to preloading?
-        
+        out("requestedsquares".concat(requestedSquares));
         //console.log("Getting coordinates....");
+        var inputArray = [];
+        var level = nSquares; //TO DO --- depends on the staircase
+        for (i = 0; i < level; i++){
+            inputArray[i] = i;
+        }
+        var outputArray = getAllPairwiseCombinations(inputArray);
 
-        validSquaresFound = 0;
-     
-        j = 0;
+        var allSquaresValid  = false;
+        var coordinates = [];
 
-        //while (validSquaresFound < requestedSquares) {
-            //console.log("Run while..");
-           for (i = 0; i < requestedSquares; i++) {
-                coordinates.push( pickRandom_xy() );
-                //console.log("Added random coordinates");
-                //console.log(coordinates[0])
-            }
-            out(coordinates);
-            valid_coordinates = [];
+        var whilecount = 0;
 
-//        console.log("Coordinates are more than 1");
+        //Pick initial squares
+        for (i = 0; i < requestedSquares; i++) {
+            coordinates.push( pickRandom_xy() );
+            //out("requesting ".concat(i + 1).concat("th square"));
+        }
 
-            var inputArray = [];
-            var level = nSquares; //TO DO --- depends on the staircase
-
-            for (i = 0; i < level; i++){
-                inputArray[i] = i;
-            }
-            var outputArray = getAllPairwiseCombinations(inputArray);
-            //console.log(outputArray);
+        while (allSquaresValid == false) {
+            
+            out("looping".concat(whilecount++));
 
             var pair1 = [];
             var pair2 = [];
 
-            for ( j = 0; j < outputArray.length - 1; j = j + 2) {
+
+            overlap = 0;
+
+            for ( j = 0; j < (outputArray.length - 1); j = j + 2) {
                 pair1 = coordinates[outputArray[j]];
                 pair2 = coordinates[outputArray[j+1]];
                 //out(pair1);
                 //out(pair2);
                 if (boundingBoxTest( pair1, pair2, squareSize )) {
-                    out("SUCCESS");
-                    //console.log("Valid square found");
-                    valid_coordinates.push(coordinates[outputArray[j]]); // TO DO Incorrect???....
-                    valid_coordinates.push(coordinates[outputArray[j + 1]]);
-                    validSquaresFound++;
-                    //out("Valid coords: ");
-                    //out(valid_coordinates);
+                    out("SUCCESS");                    
                 } else {
                     out("BOX overlaps.");
+                    overlap++;
+                    coordinates[outputArray[j+1]] = pickRandom_xy();
                 }
             }
-            // for ( j = 0; j < coordinates.length - 1; j++) {
-
-            //     if (boundingBoxTest( coordinates[j], coordinates[j+1], squareSize/2 )) {
-            //         console.log("Valid square found");
-            //         valid_coordinates.push(coordinates[j+1]);
-            //         validSquaresFound++;
-            //     }
-            // }
-
-        //}        
-        //coordinates = [1,5];
+            if (overlap == 0) {
+                allSquaresValid = true;
+            }
+        }
         return coordinates;
     }
 
     function pickRandom_xy() {
       //  console.log("retrieving random x and y");
-        x = randInt(xMargin,(600-3*xMargin));
-        y = randInt(yMargin,(500-3*yMargin));
+        x = randInt(xsquareSize,(600-3*xsquareSize));
+        y = randInt(ysquareSize,(500-3*ysquareSize));
         return [ x, y];
     } 
     
