@@ -43,6 +43,25 @@ Your browser does not support the HTML5 canvas tag.
     //       loop();
     //   }, delay);
     // })();
+    var experimentColors = {
+            RED: "#FF0000",
+            BLUE: "#0000FF",
+            MAGENTA: "#FF00FF",
+            GREEN: "#00FF00",
+            YELLOW: "#FFFF00",
+            ORANGE: "#FF7F00",
+            SKY_BLUE: "#007FFF",
+            NIGHT_SKY_BLUE: "#00647F",
+            DARK_ORANGE: "#7F6400",
+            CYAN: "#00FFFF",
+            DARK_RED: "#7F0000",
+            DARK_GREEN: "#007F00",
+            DARK_BLUE: "#00007F",
+            DARK_MAGENTA: "#7F007F",
+            DARK_YELLOW: "#7F7F00",
+            PINK: "#FF007F",
+            VIOLET: "#7F00FF"
+    };
 
     console.log("(C) Copyright 2015. Daniel Labbé\nRunning experiment...");//Firebug debug output
 
@@ -79,7 +98,7 @@ Your browser does not support the HTML5 canvas tag.
         //console.log(coordinates);
 
 
-        var retrievedColors = pickRandomSetOfColors(nSquares);
+        var retrievedColors = pickUniqueRandomSetOfColors(nSquares);
 
         for (i = 0; i < nSquares; i++) {
             ctx.fillStyle = retrievedColors[i];
@@ -94,18 +113,38 @@ Your browser does not support the HTML5 canvas tag.
         }
     }
 
-    function pickRandomSetOfColors(nColors){
+    function pickUniqueRandomSetOfColors(nColors){
         var selectedColors = [];
+        var palette = createColorPalette();
+        palette = shuffleFisherYates(palette);
 
         for (i = 0; i < nColors; i++){
-            selectedColors[i]= randomColorFromPalette(createColorPalette());
+            selectedColors[i]= palette[i];
         }
 
         return selectedColors;
     }
 
+    function shuffleFisherYates(array) {
+        var m = array.length, t, i;
+
+        while (m) {
+        i = Math.floor(Math.random() * m--);
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+        }
+
+        return array;
+    }
+
     function createColorPalette() {
-       var colors = ["#FF0000", "#0000FF", "#00FF00", "#CC0000", "#0000CC", "#00CC00", "#FFFF00", "#FF00FF", "#00FFFF", "#FFCC00", "#CC00FF", "#00FFCC"];
+        var colors = [];
+        for (var key in experimentColors) {
+            colors.push(experimentColors[key]);
+        }
+
+       //var colors = ["#FF0000", "#0000FF", "#00FF00", "#CC0000", "#0000CC", "#00CC00", "#FFFF00", "#FF00FF", "#00FFFF", "#FFCC00", "#CC00FF", "#00FFCC"];
        return colors;
     }
 
@@ -135,10 +174,10 @@ Your browser does not support the HTML5 canvas tag.
         var box1 = new Box(coordinates1[X], coordinates1[Y], squareSize);
         var box2 = new Box(coordinates2[X], coordinates2[Y], squareSize);
     
-        isOverlap = ((box1.s) < (box2.n)) ||
-        (box1.n > (box2.s)) ||
-        ((box1.e) < box2.w) ||
-        (box1.w > (box2.e));
+        isOverlap =    (box1.s < box2.n)
+                    || (box1.n > box2.s)
+                    || (box1.e < box2.w)
+                    || (box1.w > box2.e);
 
         return isOverlap;
     }
