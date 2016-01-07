@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<body onLoad="run()">
+
+<script type="text/javascript" src="tock.js"></script>
+<script type="text/javascript">
+
+	function run(){
+		newTimer(0);
+	}
+
+	function interTrialInterval(min, max) {
+	  var iti = Math.floor(Math.random() * (max - min + 1)) + min; // TO DO check lab experiment settings
+	  return iti;
+	}
+
+	function newTimer(number, delay){
+
+		//TO DO timeout after 10 minutes ---> End of session + message
+		const StimulusTime = 100; //DEBUG
+		const RetentionInterval = 900;
+		const MemoryArrayTime = 2000;
+
+		var iterator = number;
+		var timer = new Tock({
+			countdown: true,
+			complete: function() {
+
+				switch(iterator){
+					case 0:
+						console.log("1");
+						delay = interTrialInterval(500, 600);;
+						break;
+					case 1:
+						console.log("2");
+						delay = StimulusTime;
+						break;
+					case 2:
+						console.log("3");
+						delay = RetentionInterval;
+						break;
+					case 3:
+						console.log("4");
+						delay = MemoryArrayTime;
+						break;
+				}
+				if (iterator < 3) {
+					iterator++;
+				} else {
+					iterator = 0;
+				}
+
+				newTimer(iterator, delay);
+			}
+		});
+		timer.start(delay);
+	}
+
+</script> 
+
+<div id="debug"></div>
+</html>

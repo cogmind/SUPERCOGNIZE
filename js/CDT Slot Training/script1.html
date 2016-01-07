@@ -7,15 +7,13 @@
 Your browser does not support the HTML5 canvas tag.
 </canvas>
 
+<script type="text/javascript" src="algorithms.js"></script> 
 <script type="text/javascript" src="AllPairwiseCombinations.js"></script> 
+<script type="text/javascript" src="timer2.js"></script> <!--NTS timer.js is obsolete. Use timer2.js-->
+<script type="text/javascript" src="tock.js"></script>
 <script type="text/javascript">
 
-//   window.write("<p>Hello</>");
-
-    var iti = 500;
-    //DEBUG
-    //var iti = 20000;
-    var sessions = 100; //DEBUG
+    //EXPERIMENT CONFIGURATION
     var count = 0;
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -29,20 +27,10 @@ Your browser does not support the HTML5 canvas tag.
     var retrievedCoordinates = [];
     const X = 0;
     const Y = 1;
-    var expTimer = window.setInterval(displayStimulus, iti);
     var nSquares = 8; //INIT
-
-    //TODO
-    //replace timer with
-
-    ///https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval#Example
-    // (function loop(){
-    //    setTimeout(function() {
-    //       // Your logic here
-
-    //       loop();
-    //   }, delay);
-    // })();
+    var trials = 5;
+    var global_type = ["intertrial", "stimulus", "retention", "memory"];
+    
     var experimentColors = {
             RED: "#FF0000",
             BLUE: "#0000FF",
@@ -63,12 +51,25 @@ Your browser does not support the HTML5 canvas tag.
             VIOLET: "#7F00FF"
     };
 
-    console.log("(C) Copyright 2015. Daniel Labbé\nRunning experiment...");//Firebug debug output
+    console.log("(C) Copyright 2015. Daniel Labbé\nRunning experiment...");//debug output
+
+    runExperiment();
 
     function endSession(reason) {
         reason = "Session ended due to: ".concat(reason);
-        //alert(reason);
-        
+        out(reason);        
+    }
+
+    function displayBlankView() {
+        //out("blank view");
+        clearCanvas(ctx, c);
+        ctx.fillStyle = "#7F7F7F";
+        ctx.fillRect(0,0,600,500);
+    }
+
+    //Unique placeholder
+    function displayIntertrial(){
+        displayBlankView();
     }
 
     function displayStimulus() {
@@ -80,23 +81,8 @@ Your browser does not support the HTML5 canvas tag.
         ctx.fillStyle = "#7F7F7F";
         ctx.fillRect(0,0,600,500);
 
-        count++;
-        if (count == sessions) {
-            window.clearInterval(expTimer);
-            endSession("Timeout");
-        }
-
-
-
-        /**for (i = 0; i < 5; i++) {**/
-
-
-		//
-
-       
-        retrievedCoordinates = getCoordinates(nSquares);
+        var retrievedCoordinates = getCoordinates(nSquares);
         //console.log(coordinates);
-
 
         var retrievedColors = pickUniqueRandomSetOfColors(nSquares);
 
@@ -113,6 +99,19 @@ Your browser does not support the HTML5 canvas tag.
         }
     }
 
+    //Unique placeholder
+    function displayRetention(){
+        displayBlankView();
+    }
+
+    function displayMem() {
+        //TO DO
+        //out("MEM");
+        clearCanvas(ctx, c);
+        ctx.fillStyle = "#00FF00";
+        ctx.fillRect(0,0,600,500);
+    }
+
     function pickUniqueRandomSetOfColors(nColors){
         var selectedColors = [];
         var palette = createColorPalette();
@@ -123,19 +122,6 @@ Your browser does not support the HTML5 canvas tag.
         }
 
         return selectedColors;
-    }
-
-    function shuffleFisherYates(array) {
-        var m = array.length, t, i;
-
-        while (m) {
-        i = Math.floor(Math.random() * m--);
-        t = array[m];
-        array[m] = array[i];
-        array[i] = t;
-        }
-
-        return array;
     }
 
     function createColorPalette() {
@@ -153,22 +139,20 @@ Your browser does not support the HTML5 canvas tag.
         return color;
     }
 
-    //Pseudo-class
-    var Box = function(x, y, squareSize) {
-        this.margin = 4;
-        this.x = x;
-        this.y = y;
-        this.squareSize = squareSize;
-        this.w = x - this.margin;
-        this.n = y - this.margin;
-        this.e = x + this.squareSize + this.margin;
-        this.s = y + this.squareSize + this.margin;
-        };
-
-    var n_calls = 0;
 
     function boundingBoxTest(coordinates1, coordinates2, squareSize){
 
+        //Pseudo-class
+        var Box = function(x, y, squareSize) {
+            this.margin = 4;
+            this.x = x;
+            this.y = y;
+            this.squareSize = squareSize;
+            this.w = x - this.margin;
+            this.n = y - this.margin;
+            this.e = x + this.squareSize + this.margin;
+            this.s = y + this.squareSize + this.margin;
+        }
         var isOverlap = false;
 
         var box1 = new Box(coordinates1[X], coordinates1[Y], squareSize);
@@ -187,7 +171,6 @@ Your browser does not support the HTML5 canvas tag.
        
         var overlap = 0;
 
-        out("requestedsquares".concat(requestedSquares));
         //console.log("Getting coordinates....");
         var inputArray = [];
         var level = nSquares; //TO DO --- depends on the staircase
@@ -199,8 +182,6 @@ Your browser does not support the HTML5 canvas tag.
         var allSquaresValid  = false;
         var coordinates = [];
 
-        var whilecount = 0;
-
         //Pick initial squares
         for (i = 0; i < requestedSquares; i++) {
             coordinates.push( pickRandom_xy() );
@@ -209,8 +190,6 @@ Your browser does not support the HTML5 canvas tag.
 
         while (allSquaresValid == false) {
             
-            out("looping".concat(whilecount++));
-
             var pair1 = [];
             var pair2 = [];
 
@@ -223,9 +202,9 @@ Your browser does not support the HTML5 canvas tag.
                 //out(pair1);
                 //out(pair2);
                 if (boundingBoxTest( pair1, pair2, squareSize )) {
-                    out("SUCCESS");                    
+                    //out("SUCCESS");                    
                 } else {
-                    out("BOX overlaps.");
+                    //out("BOX overlaps.");
                     overlap++;
                     coordinates[outputArray[j+1]] = pickRandom_xy();
                 }
@@ -243,7 +222,7 @@ Your browser does not support the HTML5 canvas tag.
         y = randInt(ysquareSize,(500-3*ysquareSize));
         return [ x, y];
     } 
-    
+
     function clearCanvas(context, canvas) {
         context.clearRect(0, 0, canvas.width, canvas.height);
     }

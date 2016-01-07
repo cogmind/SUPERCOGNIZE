@@ -24,7 +24,7 @@ var staircase = {
 		}
 	},
 	applyRule: function(Z) {
-		//Stochastic Approximation
+		//Accelerated Stochastic Approximation
 		// Where Z is the response (0,1)
 		var C = this.constant;
 		var s = this.stepSize;
