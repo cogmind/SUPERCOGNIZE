@@ -19,11 +19,11 @@ Your browser does not support the HTML5 canvas tag.
     var ctx = c.getContext("2d");
     ctx.fillStyle = "#7F7F7F";
 	ctx.fillRect(0,0,600,500);
-    const xsquareSize = 10;
-    const ysquareSize = 10;
     var x = 100;
     var y = 100;
-    var squareSize = 26;
+    var SQUARE_SIZE = 26;
+    const xSQUARE_SIZE = SQUARE_SIZE;
+    const ySQUARE_SIZE = SQUARE_SIZE;
     var retrievedCoordinates = [];
     const X = 0;
     const Y = 1;
@@ -88,7 +88,7 @@ Your browser does not support the HTML5 canvas tag.
 
         for (i = 0; i < nSquares; i++) {
             ctx.fillStyle = retrievedColors[i];
-            ctx.fillRect(retrievedCoordinates[i][X], retrievedCoordinates[i][Y], squareSize, squareSize);
+            ctx.fillRect(retrievedCoordinates[i][X], retrievedCoordinates[i][Y], SQUARE_SIZE, SQUARE_SIZE);
             ///DEBUG
             //ctx.fillStyle = "#FFFFFF";
             //ctx.fillRect(coordinates[i][X]+12, coordinates[i][Y]+12, 2, 2);
@@ -97,6 +97,9 @@ Your browser does not support the HTML5 canvas tag.
 
             //DATA OUT
         }
+
+        var visual_array = [retrievedCoordinates, retrievedColors];
+        return visual_array;
     }
 
     //Unique placeholder
@@ -104,12 +107,29 @@ Your browser does not support the HTML5 canvas tag.
         displayBlankView();
     }
 
-    function displayMem() {
+    function displayMem(memArray) {
         //TO DO
-        //out("MEM");
+
+        //Background
         clearCanvas(ctx, c);
-        ctx.fillStyle = "#00FF00";
+        ctx.fillStyle = "#7F7F7F";
         ctx.fillRect(0,0,600,500);
+
+        var memCoordinates = memArray[0];
+        var memColors = memArray[1];
+
+        for (i = 0; i < nSquares; i++) {
+            ctx.fillStyle = memColors[i];
+            ctx.fillRect(memCoordinates[i][X], memCoordinates[i][Y], SQUARE_SIZE, SQUARE_SIZE);
+            ///DEBUG
+            //ctx.fillStyle = "#FFFFFF";
+            //ctx.fillRect(coordinates[i][X]+12, coordinates[i][Y]+12, 2, 2);
+            //Demonstrates that the midpoint is in the upper left corner
+            //ctx.fillRect(retrievedCoordinates[i][X], retrievedCoordinates[i][Y], 2, 2);
+
+            //DATA OUT
+        }
+
     }
 
     function pickUniqueRandomSetOfColors(nColors){
@@ -140,23 +160,22 @@ Your browser does not support the HTML5 canvas tag.
     }
 
 
-    function boundingBoxTest(coordinates1, coordinates2, squareSize){
+    function boundingBoxTest(coordinates1, coordinates2, SQUARE_SIZE){
 
-        //Pseudo-class
-        var Box = function(x, y, squareSize) {
+        var Box = function(x, y, SQUARE_SIZE) {
             this.margin = 4;
             this.x = x;
             this.y = y;
-            this.squareSize = squareSize;
+            this.SQUARE_SIZE = SQUARE_SIZE;
             this.w = x - this.margin;
             this.n = y - this.margin;
-            this.e = x + this.squareSize + this.margin;
-            this.s = y + this.squareSize + this.margin;
+            this.e = x + this.SQUARE_SIZE + this.margin;
+            this.s = y + this.SQUARE_SIZE + this.margin;
         }
         var isOverlap = false;
 
-        var box1 = new Box(coordinates1[X], coordinates1[Y], squareSize);
-        var box2 = new Box(coordinates2[X], coordinates2[Y], squareSize);
+        var box1 = new Box(coordinates1[X], coordinates1[Y], SQUARE_SIZE);
+        var box2 = new Box(coordinates2[X], coordinates2[Y], SQUARE_SIZE);
     
         isOverlap =    (box1.s < box2.n)
                     || (box1.n > box2.s)
@@ -201,7 +220,7 @@ Your browser does not support the HTML5 canvas tag.
                 pair2 = coordinates[outputArray[j+1]];
                 //out(pair1);
                 //out(pair2);
-                if (boundingBoxTest( pair1, pair2, squareSize )) {
+                if (boundingBoxTest( pair1, pair2, SQUARE_SIZE )) {
                     //out("SUCCESS");                    
                 } else {
                     //out("BOX overlaps.");
@@ -218,8 +237,8 @@ Your browser does not support the HTML5 canvas tag.
 
     function pickRandom_xy() {
       //  console.log("retrieving random x and y");
-        x = randInt(xsquareSize,(600-3*xsquareSize));
-        y = randInt(ysquareSize,(500-3*ysquareSize));
+        x = randInt(xSQUARE_SIZE,(600-3*xSQUARE_SIZE));
+        y = randInt(ySQUARE_SIZE,(500-3*ySQUARE_SIZE));
         return [ x, y];
     } 
 
