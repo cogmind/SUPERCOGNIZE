@@ -5,13 +5,15 @@ function runTraining() {
 	const MISSING_VALUE = 99999;
 	const COORDINATES = 0;
 	const COLORS = 1;
+	const MIN = 0;
+	const MAX = 1;
 
 	var exp = {
 		StimulusTime: 100,
 		RetentionInterval: 900,
 		TestArrayTime: 2000,
 		iti_range: [500, 600],
-		get_iti = function (min, max) {
+		get_iti: function(min, max) {
 			var iti = Math.floor(Math.random() * (max - min + 1)) + min; // TO DO check lab experiment settings
 			return iti;
 		}
@@ -36,42 +38,42 @@ function runTraining() {
 	});
 
 	//START
-	delay = exp.get_iti(exp.iti_range[0], exp.iti_range[1]);
-	nextFunction(delay, frame1);
+	delay = exp.get_iti(exp.iti_range[MIN], exp.iti_range[MAX]);
+	nextFunction(delay, frame_iti);
 
 	function frame_iti() {
 		trial.count++;
-		console.log("1");
+		console.log("1 ".concat(delay));
 
+		trial.random_ITI = exp.get_iti(exp.iti_range[0], exp.iti_range[1]);
+		nextFunction(exp.get_iti(exp.iti_range[MIN], exp.iti_range[MAX]), frame_stimulus);
+		
 		displayIntertrial();
 
-		nextFunction(exp.StimulusTime, frame_stimulus);
 	}
 	function frame_stimulus() {
-		console.log("2");
+		console.log("2 ".concat(exp.StimulusTime));
 
 		trial.visualArray = displayStimulus();
 		trial.coordinates = trial.visualArray[COORDINATES];
 		trial.colors = trial.visualArray[COLORS];
 
-		nextFunction(exp.RetentionInterval, frame_retention);
+		nextFunction(exp.StimulusTime, frame_retention);		
 	}
 	function frame_retention() {
-		console.log("3");
+		console.log("3 ".concat(exp.RetentionInterval));
 
 		displayRetention();
 
-		nextFunction(exp.TestArrayTime, frame_test);
+		nextFunction(exp.RetentionInterval, frame_test);
 	}
 	function frame_test() {
-		console.log("4");
+		console.log("4 ".concat(exp.TestArrayTime));
 
 		//INSERT MATCH NON MATCH CONDITION
 		displayTestArray(trial.visualArray);
 
-		trial.random_ITI = exp.get_iti(exp.iti_range[0], exp.iti_range[1]);
-		nextFunction(trial.random_ITI, frame_iti);
-
+		nextFunction(exp.TestArrayTime, frame_iti);
 		/**
 		* Replaces the input array with an unmatched array
 		* 
@@ -91,8 +93,11 @@ function runTraining() {
 				randomIndex = randInt(rmin, rmax);
 				var selectedSquare = unmatchArray[randomIndex];
 
+				//TO DO
 				//Check colors against palette
-				trial.palette
+
+				//trial.palette
+
 				//and replace it with a
 				// Previously non-existing color
 				// i.e. which is not part of the applied color set
