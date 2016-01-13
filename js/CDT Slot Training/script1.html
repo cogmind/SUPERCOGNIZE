@@ -9,6 +9,7 @@ Your browser does not support the HTML5 canvas tag.
 </canvas>
 
 <script type="text/javascript" src="algorithms.js"></script> 
+<script type="text/javascript" src="training.js"></script> 
 <script type="text/javascript" src="AllPairwiseCombinations.js"></script> 
 <script type="text/javascript" src="timer2.js"></script> <!--NTS timer.js is obsolete. Use timer2.js-->
 <script type="text/javascript" src="tock.js"></script>
@@ -26,12 +27,15 @@ Your browser does not support the HTML5 canvas tag.
     const xSQUARE_SIZE = SQUARE_SIZE;
     const ySQUARE_SIZE = SQUARE_SIZE;
     var retrievedCoordinates = [];
-    const X = 0;
-    const Y = 1;
     var nSquares = 8; //INIT
     var trials = 5;
-    var global_type = ["intertrial", "stimulus", "retention", "memory"];
     
+    //CONSTANTS
+    const X = 0;
+    const Y = 1;
+    const COORDINATES = 0;
+    const COLORS = 1;
+
     var experimentColors = {
             RED: "#FF0000",
             BLUE: "#0000FF",
@@ -54,7 +58,7 @@ Your browser does not support the HTML5 canvas tag.
 
     console.log("(C) Copyright 2015. Daniel Labbé\nRunning experiment...");//debug output
 
-    runExperiment();
+    runTraining();
 
     function endSession(reason) {
         reason = "Session ended due to: ".concat(reason);
@@ -108,7 +112,7 @@ Your browser does not support the HTML5 canvas tag.
         displayBlankView();
     }
 
-    function displayMem(memArray) {
+    function displayTestArray(stimArray) {
         //TO DO
 
         //Background
@@ -116,8 +120,8 @@ Your browser does not support the HTML5 canvas tag.
         ctx.fillStyle = "#7F7F7F";
         ctx.fillRect(0,0,600,500);
 
-        var memCoordinates = memArray[0];
-        var memColors = memArray[1];
+        var memCoordinates = stimArray[0];
+        var memColors = stimArray[1];
 
         for (i = 0; i < nSquares; i++) {
             ctx.fillStyle = memColors[i];
@@ -240,7 +244,7 @@ Your browser does not support the HTML5 canvas tag.
       //  console.log("retrieving random x and y");
         x = randInt(xSQUARE_SIZE,(600-3*xSQUARE_SIZE));
         y = randInt(ySQUARE_SIZE,(500-3*ySQUARE_SIZE));
-        return [ x, y];
+        return [x, y];
     } 
 
     function clearCanvas(context, canvas) {
