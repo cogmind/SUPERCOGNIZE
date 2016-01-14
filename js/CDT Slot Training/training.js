@@ -1,6 +1,6 @@
 function runTraining() {
 
-	console.log("runnning training");
+	console.log("Running training...");
 
 	const MISSING_VALUE = 99999;
 	const COORDINATES = 0;
@@ -9,6 +9,9 @@ function runTraining() {
 	const MAX = 1;
 
 	var exp = {
+		//TimeOut: 10 * 60000, //10 minutes 
+		trials: 120,
+		BIN_DIST: generateBinomialDistribution(this.trials), //algorithms.js
 		StimulusTime: 100,
 		RetentionInterval: 900,
 		TestArrayTime: 2000,
@@ -71,7 +74,24 @@ function runTraining() {
 		console.log("4 ".concat(exp.TestArrayTime));
 
 		//INSERT MATCH NON MATCH CONDITION
-		displayTestArray(trial.visualArray);
+		if (exp.BIN_DIST[trial.count] == NON_MATCH) {
+			//Generate NEW ARRAY based on the previous stimulus array
+
+			displayTestArray(unmatchArray());
+
+		} else if (exp.BIN_DIST[trial.count] == MATCH) {
+			
+		//Register in the data model
+		trial.testCoordinates = trial.stimulusCoordinates;
+		trial.testColors = trial.stimulusColors;
+
+		//Re-reference
+		displayTestArray(trial.visualArray);//
+		
+		} else {
+			console.log("ERROR in frame_test. The binomial distribution for match/non-match trials.");
+		}
+
 
 		nextFunction(exp.TestArrayTime, frame_iti);
 		/**
@@ -84,7 +104,6 @@ function runTraining() {
 			var rmax = trial.visualArray.length;
 
 			var squaresToChange = 1;
-			var a;
 
 			for (i = 0; i < squaresToChange; i++){
 
