@@ -110,7 +110,9 @@ function runTraining() {
 				var unmatchedArray = trial.visualArray.slice(0);
 
 				randomIndex = randInt(rmin, rmax);
-				var selectedSquare = unmatchArray[randomIndex];
+				var selectedSquare = unmatchedArray[randomIndex];
+
+
 
 				//TO DO
 				//Check colors against palette
