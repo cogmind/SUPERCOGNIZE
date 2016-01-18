@@ -112,6 +112,8 @@ function runTraining() {
 				randomIndex = randInt(rmin, rmax);
 				var selectedSquare = unmatchedArray[randomIndex];
 
+				getUniqueColor(trial.colors, experimentColors);//Confusing structure of trial colors (cf. visual_array)
+				
 
 
 				//TO DO
