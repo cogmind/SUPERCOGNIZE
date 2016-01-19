@@ -15,8 +15,7 @@ function runTraining() {
 
 	var exp = {
 		//TimeOut: 10 * 60000, //10 minutes 
-		trials: 120,
-		BIN_DIST: generateBinomialDistribution(this.trials), //algorithms.js
+		BIN_DIST: generateBinomialDistribution(this.trials), // this = algorithms.js
 		StimulusTime: 100,
 		RetentionInterval: 900,
 		TestArrayTime: 2000,
@@ -30,7 +29,6 @@ function runTraining() {
 	var trial = {
 
 		count: 0,
-		visualArray: [],
 		stimulusCoordinates: [],
 		stimulusColors: [],
 		testCoordinates: [],
@@ -62,9 +60,9 @@ function runTraining() {
 	function frame_stimulus() {
 		console.log("2 ".concat(exp.StimulusTime));
 
-		trial.visualArray = displayStimulus();
-		trial.coordinates = trial.visualArray[COORDINATES];
-		trial.colors = trial.visualArray[COLORS];
+		trial.stimulusArray = displayStimulus();
+		trial.stimulusCoordinates = trial.stimulusArray[COORDINATES];
+		trial.stimulusColors = trial.stimulusArray[COLORS];
 
 		nextFunction(exp.StimulusTime, frame_retention);		
 	}
@@ -78,23 +76,35 @@ function runTraining() {
 	function frame_test() {
 		console.log("4 ".concat(exp.TestArrayTime));
 
+		//Keep coordinates
+		trial.testCoordinates = trial.stimulusCoordinates;
+
 		//INSERT MATCH NON MATCH CONDITION
 		if (exp.BIN_DIST[trial.count] == NON_MATCH) {
 			//Generate NEW ARRAY based on the previous stimulus array
+			out("NON-MATCH");
 
-			displayTestArray(unmatchArray());
+			var nonMatchArray = [];
+			nonMatchArray[COORDINATES] = trial.stimulusCoordinates;
+			nonMatchArray[COLORS] = unmatchArray(); //DEBUGABLE COMPABILITY CHECK?? Array is not unpacked
+
+			//out("non match array>coord ");
+			//out(nonMatchArray[COORDINATES]);			
+			//out("non match array>color ");
+			//out(nonMatchArray[COLORS]);
+			displayTestArray(nonMatchArray);
 
 		} else if (exp.BIN_DIST[trial.count] == MATCH) {
 			
-		//Register in the data model
-		trial.testCoordinates = trial.stimulusCoordinates;
-		trial.testColors = trial.stimulusColors;
+			out("MATCH");
+			//Register in the data model
+			trial.testColors = trial.stimulusColors;
 
-		//Re-reference
-		displayTestArray(trial.visualArray);//
-		
+			//Re-reference
+			displayTestArray(trial.stimulusArray);//
+			
 		} else {
-			console.log("ERROR in frame_test. The binomial distribution for match/non-match trials.");
+			console.log("ERROR in frame_test. The binomial distribution for match/non-match trials. Reason: exp.BIN_DIST[trial.count] = " + exp.BIN_DIST[trial.count]);
 		}
 
 
@@ -106,30 +116,31 @@ function runTraining() {
 		function unmatchArray() {
 			var randomIndex = 0;
 			var rmin = 0;
-			var rmax = trial.visualArray.length;
+			var rmax = trial.stimulusArray.length;
 
 			var squaresToChange = 1;
 
 			for (i = 0; i < squaresToChange; i++){
 
-				var unmatchedArray = trial.visualArray.slice(0);
+
+				if (squaresToChange > 1) {
+					("WARNING in unmatchArray().. The current version does not yet sample with replacement");
+				}
+
+				//Check colors against palette
+				// and replace it with a
+				// Previously non-existing color
+				// i.e. which is not part of the applied color set
+
+				var unmatchedArray = trial.stimulusArray[COLORS].slice(0);
 
 				randomIndex = randInt(rmin, rmax);
 				var selectedSquare = unmatchedArray[randomIndex];
 
-				getUniqueColor(trial.colors, experimentColors);//Confusing structure of trial colors (cf. visual_array)
-				
+				var newColor = getUniqueColor(trial.stimulusColors, experimentColors);
 
+				unmatchedArray[randomIndex] = newColor;//Confusing structure of trial colors (cf. visual_array)
 
-				//TO DO
-				//Check colors against palette
-
-				//trial.palette
-
-				//and replace it with a
-				// Previously non-existing color
-				// i.e. which is not part of the applied color set
-				// consider set theory 
 			}
 
 			return unmatchedArray;
