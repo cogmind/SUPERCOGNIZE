@@ -3,10 +3,15 @@ function runTraining() {
 	console.log("Running training...");
 
 	const MISSING_VALUE = 99999;
+
 	const COORDINATES = 0;
 	const COLORS = 1;
+
 	const MIN = 0;
 	const MAX = 1;
+
+	const NON_MATCH = 0;
+	const MATCH = 1;
 
 	var exp = {
 		//TimeOut: 10 * 60000, //10 minutes 

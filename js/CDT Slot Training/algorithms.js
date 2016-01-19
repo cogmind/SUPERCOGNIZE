@@ -13,7 +13,7 @@ function shuffleFisherYates(array) {
 
 function generateBinomialDistribution(n) {
     if (n % 2 != 0) {
-        console.log("WARNING. generateBinomialDistribution(): n must be an even number. Adjusting by adding 1.");
+        console.log("WARNING. generateBinomialDistribution(): n was " + n + ". n must be an even number. Adjusting by adding 1.");
         n = n + 1;
     }
 
