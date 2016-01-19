@@ -3,8 +3,19 @@
 <html>
 <body>
 
-<canvas id="myCanvas" width="600" height="500" style="border:1px solid
-#c3c3c3;">
+<style>
+    body{
+        background-color: #aaaaaa;
+    }
+    canvas {
+        padding: 0;
+        margin: auto;
+        margin-top: 50px;
+        display: block;
+        border-style: none;
+    }
+</style>
+<canvas id="myCanvas" width="600" height="500">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
 
@@ -89,7 +100,7 @@ Your browser does not support the HTML5 canvas tag.
         var retrievedCoordinates = getCoordinates(nSquares);
         //console.log(coordinates);
 
-        var retrievedColors = pickUniqueRandomSetOfColors(nSquares);
+        var retrievedColors = pickUniqueRandomSetOfColors(nSquares, experimentColors);
 
         for (i = 0; i < nSquares; i++) {
             ctx.fillStyle = retrievedColors[i];
@@ -120,8 +131,8 @@ Your browser does not support the HTML5 canvas tag.
         ctx.fillStyle = "#7F7F7F";
         ctx.fillRect(0,0,600,500);
 
-        var memCoordinates = stimArray[0];
-        var memColors = stimArray[1];
+        var memCoordinates = stimArray[COORDINATES];
+        var memColors = stimArray[COLORS];
 
         for (i = 0; i < nSquares; i++) {
             ctx.fillStyle = memColors[i];
@@ -137,9 +148,9 @@ Your browser does not support the HTML5 canvas tag.
 
     }
 
-    function pickUniqueRandomSetOfColors(nColors){
+    function pickUniqueRandomSetOfColors(nColors, colorPopulation){
         var selectedColors = [];
-        var palette = createColorPalette();
+        var palette = createColorPalette(colorPopulation);
         palette = shuffleFisherYates(palette);
 
         for (i = 0; i < nColors; i++){
@@ -149,13 +160,11 @@ Your browser does not support the HTML5 canvas tag.
         return selectedColors;
     }
 
-    function createColorPalette() {
+    function createColorPalette(colorPopulation) {
         var colors = [];
-        for (var key in experimentColors) {
-            colors.push(experimentColors[key]);
+        for (var key in colorPopulation) {
+            colors.push(colorPopulation[key]);
         }
-
-       //var colors = ["#FF0000", "#0000FF", "#00FF00", "#CC0000", "#0000CC", "#00CC00", "#FFFF00", "#FF00FF", "#00FFFF", "#FFCC00", "#CC00FF", "#00FFCC"];
        return colors;
     }
 
@@ -164,6 +173,23 @@ Your browser does not support the HTML5 canvas tag.
         return color;
     }
 
+    function getUniqueColor(colorsToExclude, oldColorPopulation) {
+
+        var colorsToRetrieve = 1;
+        var newColorPopulation = {};
+
+        for (key in oldColorPopulation){
+            if (!(key in colorsToExclude)) {
+                //DEBUG
+                //document.write(experimentColors[key] + ", ");
+                newColorPopulation[key] = experimentColors[key];
+            }
+        }
+        //DEBUG
+        //document.write(Object.getOwnPropertyNames(newColorPopulation).length);
+
+        return pickUniqueRandomSetOfColors(colorsToRetrieve, newColorPopulation);
+    }
 
     function boundingBoxTest(coordinates1, coordinates2, SQUARE_SIZE){
 
@@ -191,8 +217,7 @@ Your browser does not support the HTML5 canvas tag.
     }
     
     function getCoordinates(requestedSquares) {
-        //TODO Implement recursion
-       
+        
         var overlap = 0;
 
         //console.log("Getting coordinates....");
@@ -216,7 +241,6 @@ Your browser does not support the HTML5 canvas tag.
             
             var pair1 = [];
             var pair2 = [];
-
 
             overlap = 0;
 
