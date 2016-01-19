@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,user-scalable=no">
 <html>
 <body>
 
@@ -20,6 +21,7 @@ Your browser does not support the HTML5 canvas tag.
 </canvas>
 
 <script type="text/javascript" src="algorithms.js"></script> 
+<script type="text/javascript" src="Response.js"></script> 
 <script type="text/javascript" src="training.js"></script> 
 <script type="text/javascript" src="AllPairwiseCombinations.js"></script> 
 <script type="text/javascript" src="timer2.js"></script> <!--NTS timer.js is obsolete. Use timer2.js-->
@@ -69,7 +71,10 @@ Your browser does not support the HTML5 canvas tag.
 
     console.log("(C) Copyright 2016. Daniel Labbé\nRunning experiment...");//debug output
 
+    //TO DO> Implement Touch/mobile/tablet interaction
+    //getDevice();
     runTraining();
+
 
     function endSession(reason) {
         reason = "Session ended due to: ".concat(reason);

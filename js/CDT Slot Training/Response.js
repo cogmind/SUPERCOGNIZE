@@ -8,19 +8,19 @@ function getDevice() {
 	const deviceType = ["desktop", "tablet", "mobile"];
 
 	switch (device) {
-		case: deviceType[DESKTOP]
+		case deviceType[DESKTOP]:
 			console.log("Desktop detected");
 			break;
-		case: deviceType[TABLET]
+		case deviceType[TABLET]:
 			console.log("Tablet detected");
 			break;	// Break might not apply depending on the order of (arguments)
 					// e.g. screen size is large
-		case: deviceType[MOBILE]
+		case deviceType[MOBILE]:
 			console.log("Mobile");
 			break;
-	} default {
-		alert("ERROR. Device not supported. To ensure future compability your device type has been anonymously registered with the web developer");
-		//TO DO email device type to programmer
+		default:
+			alert("ERROR. Device not supported.");// To ensure future compability your device type has been anonymously registered with the web developer");
+			//TO DO email device type to programmer
 	} 
 }
 
