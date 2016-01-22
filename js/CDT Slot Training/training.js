@@ -47,7 +47,21 @@ function runTraining() {
 	delay = exp.get_iti(exp.iti_range[MIN], exp.iti_range[MAX]);
 	nextFunction(delay, frame_iti);
 
+	var eventAdded = false;
+
 	function frame_iti() {
+
+		if (eventAdded){
+			if (document.removeEventListener) 
+			// For all major browsers, except IE 8 and earlier
+			    document.removeEventListener("keydown", getResponse);
+			} else if (x.detachEvent) {
+			// For IE 8 and earlier versions
+			    document.detachEvent("keydown", getResponse);
+			}
+			}
+		
+
 		trial.count++;
 		console.log("1 ".concat(delay));
 
@@ -74,7 +88,12 @@ function runTraining() {
 		nextFunction(exp.RetentionInterval, frame_test);
 	}
 	function frame_test() {
+		
 		console.log("4 ".concat(exp.TestArrayTime));
+
+		//Turn keyboard responses on
+		document.addEventListener("keydown", getResponse);
+		eventAdded = true;
 
 		//Keep coordinates
 		trial.testCoordinates = trial.stimulusCoordinates;
@@ -163,6 +182,16 @@ function runTraining() {
 		timer.start(delay);
 	}
 
+	//CONTROLLER
+	function getResponse(keydownevent){
+
+		console.log("Fetching response..");
+		console.log(keydownevent.key);
+		if (keyDown.key == 1) {
+			//
+		} else if(keyDown.key == 9) {
+			//
+		}
 
 	//Note to self: Reuse of function
 	function randInt(min, max) {
