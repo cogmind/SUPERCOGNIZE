@@ -2,7 +2,7 @@ function runTraining() {
 
 	console.log("Running training...");
 
-	const MISSING_VALUE = 99999;
+	const MISSING_VALUE = -99999;
 
 	const COORDINATES = 0;
 	const COLORS = 1;
@@ -36,7 +36,9 @@ function runTraining() {
 		stimulusPalette: [],
 		trialType: null,
 		random_ITI: MISSING_VALUE,
-		responseCorrect: null //TO DO
+		responseCorrect: null,
+		responseType: null,
+		keyPressed: null
 	};
 
 	var timer = new Tock({
@@ -52,16 +54,41 @@ function runTraining() {
 	function frame_iti() {
 
 		if (eventAdded){
-			if (document.removeEventListener) 
+			if (document.removeEventListener) {
 			// For all major browsers, except IE 8 and earlier
 			    document.removeEventListener("keydown", getResponse);
-			} else if (x.detachEvent) {
+			    console.log("");
+			} else if (document.detachEvent) {
 			// For IE 8 and earlier versions
 			    document.detachEvent("keydown", getResponse);
+			} else {
+				console.log("ERROR. Browser not compatible with key event");
 			}
-			}
-		
 
+			//Check if previous response was correct
+			if (trial.trialType == MATCH && trial.keyPressed == 1) {
+				trial.responseType = "HIT";
+				trial.responseCorrect = 1;
+				console.log("CORRECT!");
+			} else if (trial.trialType == NON_MATCH && trial.keyPressed == 9) {
+				trial.responseType = "CR";
+				trial.responseCorrect = 0;
+				console.log("CORRECT!");
+			} else if (trial.trialType == NON_MATCH && trial.keyPressed == 1) {
+				console.log("WRONG!");
+				trial.responseCorrect = 0;
+				trial.responseType = "FA";
+			} else if (trial.trialType == MATCH && trial.keyPressed == 9) {
+				trial.responseType = "MISS";
+				trial.responseCorrect = 0;
+				console.log("WRONG!");
+			} else {
+				console.log("Invalid response");
+				trial.responseCorrect = MISSING_VALUE;
+			}
+		}
+
+		//NEXT TRIAL
 		trial.count++;
 		console.log("1 ".concat(delay));
 
@@ -102,6 +129,7 @@ function runTraining() {
 		if (exp.BIN_DIST[trial.count] == NON_MATCH) {
 			//Generate NEW ARRAY based on the previous stimulus array
 			out("NON-MATCH");
+			trial.trialType = NON_MATCH;
 
 			var nonMatchArray = [];
 			nonMatchArray[COORDINATES] = trial.stimulusCoordinates;
@@ -116,6 +144,7 @@ function runTraining() {
 		} else if (exp.BIN_DIST[trial.count] == MATCH) {
 			
 			out("MATCH");
+			trial.trialType = MATCH;
 			//Register in the data model
 			trial.testColors = trial.stimulusColors;
 
@@ -123,6 +152,7 @@ function runTraining() {
 			displayTestArray(trial.stimulusArray);//
 			
 		} else {
+			trial.trialType = MISSING_VALUE;
 			console.log("ERROR in frame_test. The binomial distribution for match/non-match trials. Reason: exp.BIN_DIST[trial.count] = " + exp.BIN_DIST[trial.count]);
 		}
 
@@ -183,15 +213,20 @@ function runTraining() {
 	}
 
 	//CONTROLLER
-	function getResponse(keydownevent){
+	function getResponse(keyDown){
 
 		console.log("Fetching response..");
-		console.log(keydownevent.key);
+		console.log("Response is " + keyDown.key);
 		if (keyDown.key == 1) {
-			//
+			trial.keyPressed = 1;
 		} else if(keyDown.key == 9) {
-			//
+			trial.keyPressed = 9;
+		} else {
+			trial.keyPressed = keyDown.key;
+			console.log(keyDown.key + " is not a valid key");
 		}
+		keyDown.key = null;
+	}
 
 	//Note to self: Reuse of function
 	function randInt(min, max) {
