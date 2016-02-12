@@ -15,10 +15,20 @@
         display: block;
         border-style: none;
     }
+    #level {
+        padding: 0;
+        width: 600px;
+        margin: auto;
+        color: #fff;
+        display: block;
+        font-size: 40px;
+        font-family: sans-serif;
+    }
 </style>
 <canvas id="myCanvas" width="600" height="500">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
+<p id="level">LEVEL</p>
 
 <script type="text/javascript" src="algorithms.js"></script> 
 <script type="text/javascript" src="Response.js"></script> 
@@ -31,6 +41,7 @@ Your browser does not support the HTML5 canvas tag.
     //EXPERIMENT CONFIGURATION
     var count = 0;
     var c = document.getElementById("myCanvas");
+    var htmlLevel = document.getElementById("level");
     var ctx = c.getContext("2d");
     ctx.fillStyle = "#7F7F7F";
 	ctx.fillRect(0,0,600,500);
@@ -227,8 +238,7 @@ Your browser does not support the HTML5 canvas tag.
 
         //console.log("Getting coordinates....");
         var inputArray = [];
-        var level = nSquares; //TO DO --- depends on the staircase
-        for (i = 0; i < level; i++){
+        for (i = 0; i < nSquares; i++){
             inputArray[i] = i;
         }
         var outputArray = getAllPairwiseCombinations(inputArray);

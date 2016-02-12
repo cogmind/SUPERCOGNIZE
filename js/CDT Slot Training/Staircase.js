@@ -1,6 +1,10 @@
 //Staircase
 
-var staircase = {
+const CORRECT = 1;
+const INCORRECT = 0;
+const MISSING = -9999;
+
+var Staircase = {
 
 	level: 1,
 	correct: 0,
@@ -13,9 +17,10 @@ var staircase = {
 	previousResponse: null,
 	
 	accumulate: function(response){
-		if (response == correct) {
+	
+		if (response == CORRECT) {
 			this.correct++;
-		} else if(response == incorrect) {
+		} else if(response == INCORRECT) {
 			this.incorrect++;
 		} else if (missing) {
 			this.missing++;
@@ -62,11 +67,11 @@ var staircase = {
 		}
 		var Z = 0;
 
-		if (response == 'correct') {
-			Z = 1;
-		} else if (response == 'incorrect'){
-			Z = 0;
-		} else if (response == 'missing'){
+		if (response == CORRECT) {
+			Z = CORRECT;
+		} else if (response == INCORRECT){
+			Z = INCORRECT;
+		} else if (response == MISSING){
 			Z = null;
 			out("Missing response");
 		}
